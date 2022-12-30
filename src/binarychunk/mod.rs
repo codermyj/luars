@@ -90,9 +90,26 @@ impl Reader {
     }
 
     pub fn read_u32(&mut self) -> u32 {
-        let u = &self.data[self.pos..self.pos + 4];
-        self.pos += 4;
-        (u[3] as u32) << 24 | (u[2] as u32) << 16 | (u[1] as u32) << 8 | (u[0] as u32)
+        let mut u: u32 = 0;
+        for i in 0..4 {
+            u = u | ((self.read_byte() as u32) << (i * 8));
+        }
+        u
     }
 
+    pub fn read_u64(&mut self) -> u64 {
+        let mut u: u64 = 0;
+        for i in 0..8 {
+            u = u | ((self.read_byte() as u64) << (i * 8));
+        }
+        u
+    }
+
+    pub fn read_lua_integer(&mut self) -> i64 {
+        self.read_u64() as i64
+    }
+
+    pub fn read_lua_number(&mut self) -> f64 {
+        f64::from_bits(self.read_u64())
+    }
 }
