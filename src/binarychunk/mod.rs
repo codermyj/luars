@@ -1,9 +1,11 @@
+//二进制chunk
 pub struct BinaryChunk {
     header: Header,
     size_upvalues: u8,
     main_func: Prototype,
 }
 
+//头信息
 pub struct Header {
     signature: [u8; 4],
     version: u8,
@@ -29,3 +31,68 @@ const LUA_INTEGER_SIZE: u8 = 8;
 const LUA_NUMBER_SIZE: u8 = 8;
 const LUAC_INT: i64 = 0x5678;
 const LUAC_NUM: f64 = 370.5;
+
+//函数原型
+pub struct Prototype {
+    pub source: String,
+    pub line_defined: u32,
+    pub last_line_defined: u32,
+    pub num_params: u8,
+    pub is_varargs: u8,
+    pub max_stack_size: u8,
+    pub code: Vec<u32>,
+    pub constants: Vec<Constant>,
+
+}
+
+//常量类型
+pub enum Constant {
+    Nil,
+    Boolean(bool),
+    Number(f64),
+    Integer(i64),
+    String(String)
+}
+const TAG_NIL: u8 = 0x00;
+const TAG_BOOLEAN: u8 = 0x01;
+const TAG_NUMBER: u8 = 0x03;
+const TAG_INTEGER: u8 = 0x13;
+const TAG_SHORT_STR: u8 = 0x04;
+const TAG_LONG_STR: u8 = 0x14;
+
+//Upvalue表
+pub struct Upvalue {
+    pub in_stack: u8,
+    pub idx: u8
+}
+
+//局部变量表
+pub struct LocVar{
+    pub var_name: String,
+    pub start_pc: u32,
+    pub end_pc: u32
+}
+
+pub struct Reader {
+    data: Vec<u8>,
+    pos: usize
+}
+
+impl Reader {
+    pub fn new(data: Vec<u8>) -> Reader {
+        Reader { data,  pos: 0 }
+    }
+
+    pub fn read_byte(&mut self) -> u8 {
+        let b =  self.data[self.pos];
+        self.pos += 1;
+        b
+    }
+
+    pub fn read_u32(&mut self) -> u32 {
+        let u = &self.data[self.pos..self.pos + 4];
+        pos += 4;
+        (u[3] as u32) << 24 | (u[2] as u32) << 16 | (u[1] as u32) << 8 | (u[0] as u32)
+    }
+
+}
