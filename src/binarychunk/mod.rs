@@ -91,7 +91,7 @@ impl Reader {
 
     pub fn read_u32(&mut self) -> u32 {
         let u = &self.data[self.pos..self.pos + 4];
-        pos += 4;
+        self.pos += 4;
         (u[3] as u32) << 24 | (u[2] as u32) << 16 | (u[1] as u32) << 8 | (u[0] as u32)
     }
 
