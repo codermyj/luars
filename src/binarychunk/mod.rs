@@ -83,12 +83,14 @@ impl Reader {
         Reader { data,  pos: 0 }
     }
 
+    // 读取一个字节
     pub fn read_byte(&mut self) -> u8 {
         let b =  self.data[self.pos];
         self.pos += 1;
         b
     }
 
+    // 小端法读取一个cint类型数据
     pub fn read_u32(&mut self) -> u32 {
         let mut u: u32 = 0;
         for i in 0..4 {
@@ -97,6 +99,7 @@ impl Reader {
         u
     }
 
+    // 小端法读取一个size_t类型数据
     pub fn read_u64(&mut self) -> u64 {
         let mut u: u64 = 0;
         for i in 0..8 {
@@ -105,11 +108,38 @@ impl Reader {
         u
     }
 
+    // 小端法读取Lua整数类型
     pub fn read_lua_integer(&mut self) -> i64 {
         self.read_u64() as i64
     }
 
+    // 小端法读取Lua浮点数类型
     pub fn read_lua_number(&mut self) -> f64 {
         f64::from_bits(self.read_u64())
+    }
+
+    // 从字节流读取字符串
+    pub fn read_string(&mut self) -> String {
+        let mut size = self.read_byte() as usize;
+        if size == 0 {
+            return String::from("");
+        }
+        if size == 0xFF {
+            size = self.read_u64() as usize;
+        }
+
+        match String::from_utf8(self.read_bytes(size - 1)) {
+            Ok(str) => str,
+            Err(e) => format!("Err: {}", e.to_string())
+        }
+    }
+
+    // 从字节流读取n个字节
+    pub fn read_bytes(&mut self, n: usize) -> Vec<u8> {
+        let mut bytes: Vec<u8> = Vec::with_capacity(n);
+        for _ in 0..n {
+            bytes.push(self.read_byte())
+        }
+        bytes
     }
 }
