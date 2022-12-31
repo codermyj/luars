@@ -1,3 +1,5 @@
+use core::panicking::panic;
+
 //二进制chunk
 pub struct BinaryChunk {
     header: Header,
@@ -42,7 +44,11 @@ pub struct Prototype {
     pub max_stack_size: u8,
     pub code: Vec<u32>,
     pub constants: Vec<Constant>,
-
+    pub upvalues: Vec<Upvalue>,
+    pub protos: Vec<Prototype>,
+    pub line_info: Vec<u32>,
+    pub loc_vars: Vec<LocVar>,
+    pub upvalue_names: Vec<String>,
 }
 
 //常量类型
@@ -141,5 +147,128 @@ impl Reader {
             bytes.push(self.read_byte())
         }
         bytes
+    }
+
+    // 检查Header
+    pub fn check_header(&mut self) {
+        assert_eq!(self.read_bytes(4), LUA_SIGNATURE, "not a compiled chunk!");
+        assert_eq!(self.read_byte(), LUA_VERSION, "version mismatch!");
+        assert_eq!(self.read_byte(), LUA_FORMAT, "format mismatch!");
+        assert_eq!(self.read_bytes(6), LUAC_DATA, "corrupted!");
+        assert_eq!(self.read_byte(), C_INT_SIZE, "int size mismatch"!);
+        assert_eq!(self.read_byte(), C_SIZE_T_SIZE, "size_t size mismatch!");
+        assert_eq!(self.read_byte(), INSTRUCTION_SIZE, "instruction size mismatch!");
+        assert_eq!(self.read_byte(), LUA_INTEGER_SIZE, "lua integer size mismatch!");
+        assert_eq!(self.read_byte(), LUA_NUMBER_SIZE, "lua number size mismatch!");
+        assert_eq!(self.read_lua_integer(), LUAC_INT, "endianness mismatch!");
+        assert_eq!(self.read_lua_number(), LUAC_NUM, "float format mismatch!")
+    }
+
+    pub fn read_proto(&mut self, parent_source: String) -> Prototype {
+        let mut source = self.read_string();
+        if source == "" {
+            source = parent_source;
+        }
+        Prototype {
+            source,
+            line_defined: self.read_u32(),
+            last_line_defined: self.read_u32(),
+            num_params: self.read_byte(),
+            is_varargs: self.read_byte(),
+            max_stack_size: self.read_byte(),
+            code: self.read_code(),
+            constants: self.read_constants(),
+            upvalues: self.read_upvalues(),
+            protos: self.read_protos(source.clone()),
+            line_info: self.read_line_info(),
+            loc_vars: self.read_loc_vars(),
+            upvalue_names: self.read_upvalue_names(),
+        }
+    }
+
+    pub fn read_code(&mut self) -> Vec<u32> {
+        let code_size = self.read_u32() as usize;
+        let mut code: Vec<u32> = Vec::with_capacity(code_size);
+        for _ in 0..code_size {
+            code.push(self.read_u32());
+        }
+        code
+    }
+
+    pub fn read_constant(&mut self) -> Constant {
+        match self.read_byte() {
+            TAG_NIL => Constant::Nil,
+            TAG_BOOLEAN => Constant::Boolean(self.read_byte() != 0),
+            TAG_INTEGER => Constant::Integer(self.read_lua_integer()),
+            TAG_NUMBER => Constant::Number(self.read_lua_number()),
+            TAG_SHORT_STR => Constant::String(self.read_string()),
+            TAG_LONG_STR => Constant::String(self.read_string()),
+            _ => panic!("corrupted!")
+        }
+    }
+
+    pub fn read_constants(&mut self) -> Vec<Constant> {
+        let constants_size = self.read_u32() as usize;
+        let mut constants: Vec<Constant> = Vec::with_capacity(constants_size);
+        for _ in 0..constants_size {
+            constants.push(self.read_constant());
+        }
+        constants
+    }
+
+    pub fn read_upvalues(&mut self) -> Vec<Upvalue> {
+        let upvalues_size = self.read_u32() as usize;
+        let mut upvalues: Vec<Upvalue> = Vec::with_capacity(upvalues_size);
+        for _ in 0..upvalues_size {
+            upvalues.push(
+                Upvalue {
+                    in_stack: self.read_byte(),
+                    idx: self.read_byte(),
+                }
+            )
+        }
+        upvalues
+    }
+
+    pub fn read_protos(&mut self, parent_source: String) -> Vec<Prototype> {
+        let size = self.read_u32() as usize;
+        let mut protos: Vec<Prototype> = Vec::with_capacity(size);
+        for _ in 0..size {
+            protos.push(self.read_proto(parent_source.clone()));
+        }
+        protos
+    }
+
+    pub fn read_line_info(&mut self) -> Vec<u32> {
+        let size = self.read_u32() as usize;
+        let mut line_info: Vec<u32> = Vec::with_capacity(size);
+        for _ in 0..size {
+            line_info.push(self.read_u32());
+        }
+        line_info
+    }
+
+    pub fn read_loc_vars(&mut self) -> Vec<LocVar> {
+        let size = self.read_u32() as usize;
+        let mut loc_vars: Vec<LocVar> = Vec::with_capacity(size);
+        for _ in 0..size {
+            loc_vars.push(
+                LocVar {
+                    var_name: self.read_string(),
+                    start_pc: self.read_u32(),
+                    end_pc: self.read_u32(),
+                }
+            )
+        }
+        loc_vars
+    }
+
+    pub fn read_upvalue_names(&mut self) -> Vec<String> {
+        let size = self.read_u32() as usize;
+        let mut upvalue_names: Vec<String> = Vec::with_capacity(size);
+        for _ in 0..size {
+            upvalue_names.push(self.read_string());
+        }
+        upvalue_names
     }
 }
