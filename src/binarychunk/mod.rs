@@ -1,5 +1,3 @@
-use core::panicking::panic;
-
 //二进制chunk
 pub struct BinaryChunk {
     header: Header,
@@ -79,10 +77,19 @@ pub struct LocVar{
     pub end_pc: u32
 }
 
+pub fn undump(data: Vec<u8>) -> Prototype {
+    let mut reader = Reader::new(data);
+    reader.check_header();
+    reader.read_byte();
+    reader.read_proto(String::from(""))
+}
+
 pub struct Reader {
     data: Vec<u8>,
     pos: usize
 }
+
+
 
 impl Reader {
     pub fn new(data: Vec<u8>) -> Reader {
@@ -155,7 +162,7 @@ impl Reader {
         assert_eq!(self.read_byte(), LUA_VERSION, "version mismatch!");
         assert_eq!(self.read_byte(), LUA_FORMAT, "format mismatch!");
         assert_eq!(self.read_bytes(6), LUAC_DATA, "corrupted!");
-        assert_eq!(self.read_byte(), C_INT_SIZE, "int size mismatch"!);
+        assert_eq!(self.read_byte(), C_INT_SIZE, "int size mismatch!");
         assert_eq!(self.read_byte(), C_SIZE_T_SIZE, "size_t size mismatch!");
         assert_eq!(self.read_byte(), INSTRUCTION_SIZE, "instruction size mismatch!");
         assert_eq!(self.read_byte(), LUA_INTEGER_SIZE, "lua integer size mismatch!");
@@ -170,7 +177,7 @@ impl Reader {
             source = parent_source;
         }
         Prototype {
-            source,
+            source: source.clone(),
             line_defined: self.read_u32(),
             last_line_defined: self.read_u32(),
             num_params: self.read_byte(),
