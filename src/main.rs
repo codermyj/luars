@@ -25,3 +25,8 @@ fn list(f: &binarychunk::Prototype) {
     print_code(f);
     print_detail(f);
 }
+
+fn print_header(f: &binarychunk::Prototype) {
+    let fn_type = "main";
+
+}
