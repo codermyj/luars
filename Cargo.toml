@@ -9,3 +9,6 @@ edition = "2021"
 
 [profile.dev]
 strip = true
+
+[profile.release]
+strip = true

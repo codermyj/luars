@@ -1,23 +1,23 @@
 //二进制chunk
 pub struct BinaryChunk {
-    header: Header,
-    size_upvalues: u8,
-    main_func: Prototype,
+    header: Header,         // 头部
+    size_upvalues: u8,      // 主函数upvalue数量
+    main_func: Prototype,   // 主函数原型
 }
 
-//头信息
+//头部信息
 pub struct Header {
-    signature: [u8; 4],
-    version: u8,
-    format: u8,
-    luac_data: [u8; 6],
-    c_int_size: u8,
-    c_size_t_size: u8,
-    instruction_size: u8,
-    lua_integer_size: u8,
-    lua_number_size: u8,
-    luac_int: i64,
-    luac_num: f64
+    signature: [u8; 4],     // 签名，一个魔数，值为常量，LUA_SIGNATURE，代表esc、L、u、a
+    version: u8,            // 版本号
+    format: u8,             // 格式号
+    luac_data: [u8; 6],     // 1.0发布年份、回车、换行、替换符、换行
+    c_int_size: u8,         // c int类型占用字节数
+    c_size_t_size: u8,      // size_t类型占用字节数
+    instruction_size: u8,   // Lua虚拟机指令占用字节数
+    lua_integer_size: u8,   // Lua整数占用字节数
+    lua_number_size: u8,    // Lua浮点数占用字节数
+    luac_int: i64,          // 整数0x5678，用于检测大小端方式与本机是否匹配
+    luac_num: f64           // 浮点数370.5，用于检测浮点数格式与本机是否匹配
 }
 
 const LUA_SIGNATURE: [u8; 4] = [0x1b, 0x4c, 0x75, 0x61];
@@ -34,14 +34,14 @@ const LUAC_NUM: f64 = 370.5;
 
 //函数原型
 pub struct Prototype {
-    pub source: String,
-    pub line_defined: u32,
-    pub last_line_defined: u32,
-    pub num_params: u8,
-    pub is_varargs: u8,
-    pub max_stack_size: u8,
-    pub code: Vec<u32>,
-    pub constants: Vec<Constant>,
+    pub source: String,             // 源文件名
+    pub line_defined: u32,          // 函数起始行号
+    pub last_line_defined: u32,     // 函数结束行号
+    pub num_params: u8,             // 固定参数个数
+    pub is_varargs: u8,             // 函数是否为varargs，即是否有变长参数
+    pub max_stack_size: u8,         // 寄存器数量
+    pub code: Vec<u32>,             // 指令表，每条指令占4个字节
+    pub constants: Vec<Constant>,   //
     pub upvalues: Vec<Upvalue>,
     pub protos: Vec<Prototype>,
     pub line_info: Vec<u32>,
