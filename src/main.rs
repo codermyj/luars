@@ -40,7 +40,7 @@ fn print_header(f: &binarychunk::Prototype) {
     if f.is_varargs > 0 {
         vararg_flag = "+";
     }
-    println!("\n{} <{}:{},{}> ({} instructions)",
+    println!("{} <{}:{},{}> ({} instructions)",
              fn_type, f.source, f.line_defined, f.last_line_defined, f.code.len());
 
     print!("{}{} params, {} slots, {} upvalues, ", f.num_params, vararg_flag, f.max_stack_size, f.upvalues.len());
