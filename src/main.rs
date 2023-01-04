@@ -61,20 +61,31 @@ fn print_code(f: &binarychunk::Prototype) {
 
 //打印常量表、局部变量表和Upvalue表
 fn print_detail(f: &binarychunk::Prototype) {
-    println!("constants ({})", f.constants.len());
+    println!("constants ({}):", f.constants.len());
     for (index, el) in f.constants.iter().enumerate() {
         println!("\t{}\t{}", index+1, constant_to_string(el));
+    }
+
+    println!("locals ({}):", f.loc_vars.len());
+    for (index, loc_var) in f.loc_vars.iter().enumerate() {
+        println!("\t{}\t{}\t{}\t{}\n",
+                 index, loc_var.var_name, loc_var.start_pc + 1, loc_var.end_pc + 1);
+    }
+
+    println!("upvalues ({}):", f.upvalues.len());
+    for (index, upval) in f.upvalues.iter().enumerate() {
+        println!("\t{}\t{}\t{}\t{}\n",
+                 index, upvalue_name(f, index), upval.in_stack, upval.idx);
     }
 }
 
 fn constant_to_string(constant: &Constant) -> String {
     match constant {
         Constant::Nil => format!("nil"),
-        Constant::Boolean(b) => format!("{}", b),
-        Constant::Number(n) => format!("{}", n),
-        Constant::Integer(i) => format!("{}", i),
-        Constant::String(s) => format!("{}", s),
-        //_ => format!("?")
+        Constant::Boolean(b) => format!("\"{}\"", b),
+        Constant::Number(n) => format!("\"{}\"", n),
+        Constant::Integer(i) => format!("\"{}\"", i),
+        Constant::String(s) => format!("\"{}\"", s),
     }
 }
 
