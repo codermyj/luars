@@ -2,6 +2,7 @@ use std::{env, fs};
 use crate::binarychunk::Constant;
 
 mod binarychunk;
+mod vm;
 
 fn main() {
     let args: Vec<String> = env::args().collect();

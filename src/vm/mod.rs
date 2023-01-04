@@ -1,0 +1,1 @@
+const OP_MOVE: u8 = 0;
