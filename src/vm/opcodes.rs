@@ -60,24 +60,24 @@ pub const OP_ARG_R: u8 = 0x03;
 pub const OP_ARG_K: u8 = 0x04;
 
 
-pub struct OpCode {
-    test_flag: u8,
-    set_A_flag: u8,
-    arg_B_mode: u8,
-    arg_C_mode: u8,
-    op_mode: u8,
-    name: String,
+pub struct OpCode<'a> {
+    pub test_flag: u8,
+    pub set_A_flag: u8,
+    pub arg_B_mode: u8,
+    pub arg_C_mode: u8,
+    pub op_mode: u8,
+    pub name: &'a str,
 }
 
-impl OpCode {
-    pub fn new(test_flag: u8, set_A_flag: u8, arg_B_mode: u8, arg_C_mode: u8, op_mode: u8, name: &str) -> OpCode {
+impl<'a> OpCode<'a> {
+    pub const fn new(test_flag: u8, set_A_flag: u8, arg_B_mode: u8, arg_C_mode: u8, op_mode: u8, name: &str) -> OpCode {
         OpCode {
             test_flag,
             set_A_flag, // 1表示将值存入寄存器A中
             arg_B_mode,
             arg_C_mode,
             op_mode,
-            name: String::from(name)
+            name
         }
     }
 }
@@ -88,7 +88,7 @@ impl OpCode {
 /// RK(X)：第X寄存器或者常量，是常量还是寄存器有X的最高位决定，最高位是1表示常量，否则表示寄存器;
 /// UpValue(X)：第X个UpValue;
 /// KPROTO(X)：第X个函数原型;
-pub const OPCODES: Vec<OpCode> = vec![
+pub const OPCODES: &[OpCode] = &[
     /*          T  A      B        C      mode   name    */
     OpCode::new(0, 1, OP_ARG_R, OP_ARG_N, IABC,  "MOVE    "), // 在寄存器间拷贝值。R(A) := R(B)
     OpCode::new(0, 1, OP_ARG_K, OP_ARG_N, IABx,  "LOADK   "), // 加载常量到寄存器。R(A) := Kst(B)

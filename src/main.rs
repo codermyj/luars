@@ -3,6 +3,7 @@ use crate::binarychunk::Constant;
 
 mod binarychunk;
 mod vm;
+mod test;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
