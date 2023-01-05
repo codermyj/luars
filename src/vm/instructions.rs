@@ -45,6 +45,10 @@ impl Instruction {
         (a, bx - MAXARG_sBx)
     }
 
+    pub fn ax(&self) -> i32 {
+        self >> 6
+    }
+
     pub fn op_name(&self) -> &str{
         OPCODES[self.opcode()].name
     }

@@ -1,9 +1,10 @@
 use std::{env, fs};
 use crate::binarychunk::Constant;
+use crate::vm::instructions::Instruction;
+use vm::opcodes;
 
 mod binarychunk;
 mod vm;
-mod test;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -22,7 +23,7 @@ fn main() {
 }
 
 /*
-/ Todo
+/
  */
 fn list(f: &binarychunk::Prototype) {
     print_header(f);
@@ -56,8 +57,53 @@ fn print_code(f: &binarychunk::Prototype) {
         if f.line_info.len() > 0 {
             line = format!("{}", f.line_info[pc]);
         }
+        let i = &Instruction(*c);
         pc += 1;
-        println!("\t{}\t[{}]\t0x{:0>8x}", pc, line, c);
+        print!("\t{}\t[{}]\t{} \t", pc, line, i.op_name());
+        print_operands(i);
+        println!();
+    }
+}
+
+fn print_operands(i: &Instruction) {
+    match i.op_mode() {
+        opcodes::IABC => {
+            let (a, b, c) = i.abc();
+            print!("{}", a);
+            if i.b_mode() != opcodes::OP_ARG_N {
+                if b > 0xFF {
+                    print!(" {}", -1 - (b & 0xFF));
+                }else {
+                    print!(" {}", b);
+                }
+            }
+            if i.c_mode() != opcodes::OP_ARG_N {
+                if c > 0xFF {
+                    //println!("调试信息：c>0xFF, c={}，c&0xFF={}", c, c & 0xFF);
+                    print!(" {}", -1 - (c & 0xFF));
+                }else {
+                    print!(" {}", c);
+                }
+            }
+        }
+        opcodes::IABx => {
+            let (a, bx) = i.a_bx();
+            print!("{}", a);
+            if i.b_mode() == opcodes::OP_ARG_K {
+                print!(" {}", -1-bx);
+            }else if i.b_mode() == opcodes::OP_ARG_N {
+                print!(" {}", bx);
+            }
+        }
+        opcodes::IAsBx => {
+            let (a, sbx) = i.a_sbx();
+            print!("{} {}", a, sbx);
+        }
+        opcodes::IAx => {
+            let ax = i.ax();
+            print!("{}", -1 - ax);
+        }
+        _ => {}
     }
 }
 
