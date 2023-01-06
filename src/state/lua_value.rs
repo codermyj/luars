@@ -1,5 +1,6 @@
 use crate::api::consts::*;
 
+#[derive(Clone)]
 pub enum LuaValue {
     Nil,
     Bool(bool),
