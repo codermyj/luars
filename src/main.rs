@@ -1,5 +1,7 @@
 mod binarychunk;
 mod vm;
+mod api;
+mod state;
 
 use std::{env, fs};
 use binarychunk::Constant;

@@ -1,0 +1,10 @@
+pub const LUA_TNONE: i32 = -1;
+pub const LUA_TNIL: i32 = 0;
+pub const LUA_TBOOLEAN: i32 = 1;
+pub const LUA_LIGHTUSERDATA: i32 = 2;
+pub const LUA_TNUMBET: i32 = 3;
+pub const LUA_TSTRING: i32 = 4;
+pub const LUA_TTABLE: i32 = 5;
+pub const LUA_TFUNCTION: i32 = 6;
+pub const LUA_TUSETDATA: i32 = 7;
+pub const LUA_TTHREAD: i32 = 8;
