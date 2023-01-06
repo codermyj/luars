@@ -1,10 +1,12 @@
-use std::{env, fs};
-use crate::binarychunk::Constant;
-use crate::vm::instructions::Instruction;
-use vm::opcodes;
-
 mod binarychunk;
 mod vm;
+
+use std::{env, fs};
+use binarychunk::Constant;
+use vm::instructions::Instruction;
+use vm::opcodes;
+
+
 
 fn main() {
     let args: Vec<String> = env::args().collect();
