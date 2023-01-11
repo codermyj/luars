@@ -52,12 +52,6 @@ impl api::lua_state::LuaState for LuaState {
     }
 
     fn rotate(&mut self, idx: i32, n: i32) {
-        let top_value = self.stack.pop();
-        if n > 0 {
-            for i in self.stack.top..1 {
-                self.stack.set(i, self.);
-            }
-        }
         todo!()
     }
 
