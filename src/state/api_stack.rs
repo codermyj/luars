@@ -1,3 +1,4 @@
+use std::process::id;
 use crate::api;
 use crate::api::lua_state::LuaType;
 use super::lua_state::LuaState;
@@ -16,6 +17,7 @@ impl api::lua_state::LuaState for LuaState {
         true
     }
 
+    ///从栈顶弹出n个值
     fn pop(&mut self, n: i32) {
         for _ in 0..n {
             self.stack.pop();
@@ -27,24 +29,35 @@ impl api::lua_state::LuaState for LuaState {
         self.stack.set(to_idx, val);
     }
 
+
     fn push_value(&mut self, idx: i32) {
         let val = self.stack.get(idx);
         self.stack.push(val);
     }
 
+    ///将栈顶值弹出，写入指定位置
     fn replace(&mut self, idx: i32) {
-        todo!()
+        let val = self.stack.pop();
+        self.stack.set(idx, val);
     }
 
+    ///将栈顶值弹出，插入指定位置，旋转操作rotate的特例
     fn insert(&mut self, idx: i32) {
-        todo!()
+        self.rotate(idx, 1);
     }
 
     fn remove(&mut self, idx: i32) {
-        todo!()
+        self.rotate(idx, -1);
+        self.pop(1);
     }
 
     fn rotate(&mut self, idx: i32, n: i32) {
+        let top_value = self.stack.pop();
+        if n > 0 {
+            for i in self.stack.top..1 {
+                self.stack.set(i, self.);
+            }
+        }
         todo!()
     }
 
