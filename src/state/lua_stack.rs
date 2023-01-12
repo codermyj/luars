@@ -69,7 +69,7 @@ impl LuaStack {
     pub fn reverse(&mut self, mut from: i32, mut to: i32) {
         //let from = from as usize;
         while from < to {
-            (self.slots[from], self.slots[to]) = (self.slots[to], self.slots[from])
+            (self.slots[from as usize], self.slots[to as usize]) = (self.slots[to as usize], self.slots[from as usize]);
             from += 1;
             to -= 1;
         }
