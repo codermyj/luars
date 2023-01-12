@@ -1,4 +1,4 @@
-pub struct LuaType(i32);
+pub struct LuaType(u8);
 
 pub trait LuaState {
     /// 基础栈操作
@@ -32,8 +32,8 @@ pub trait LuaState {
     fn to_string_x(&self, i32) -> (String, bool);
     /// push函数
     fn push_nil(&mut self);
-    fn push_boolean(b: bool);
-    fn push_integer(i: i64);
-    fn push_number(n: f64);
-    fn push_string(s: String);
+    fn push_boolean(&mut self, b: bool);
+    fn push_integer(&mut self,i: i64);
+    fn push_number(&mut self,n: f64);
+    fn push_string(&mut self,s: String);
 }

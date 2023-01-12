@@ -9,8 +9,7 @@ pub struct LuaStack {
 
 impl LuaStack {
     pub fn new(size: i32) -> LuaStack {
-        let mut v = Vec::with_capacity(size as usize);
-        v.fill(Nil);
+        let mut v = vec![Nil; size as usize];
         LuaStack {
             slots: v,
             top: 0,

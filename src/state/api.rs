@@ -1,7 +1,9 @@
 use std::process::id;
 use crate::api;
 use crate::api::lua_state::LuaType;
+use crate::state::lua_value::LuaValue;
 use super::lua_state::LuaState;
+use crate::api::consts::*;
 
 impl api::lua_state::LuaState for LuaState {
     fn get_top(&self) -> i32 {
@@ -70,11 +72,23 @@ impl api::lua_state::LuaState for LuaState {
     }
 
     fn set_top(&mut self, idx: i32) {
-        todo!()
+        let new_top = self.abs_index(idx);
+
+        let n = self.stack.top - new_top;
+        if n > 0 {
+            for i in 0..n {
+                self.stack.pop();
+            }
+        }else if n < 0 {
+            self.stack.push(LuaValue::Nil);
+        }
     }
 
     fn type_name(&self, tp: LuaType) -> String {
-        todo!()
+        let str = match tp {
+            LuaType(LUA_TNONE) => "no value",
+            LuaType
+        }
     }
 
     fn get_type(&self, idx: i32) -> LuaType {
@@ -138,22 +152,22 @@ impl api::lua_state::LuaState for LuaState {
     }
 
     fn push_nil(&mut self) {
-        todo!()
+        self.stack.push(LuaValue::Nil);
     }
 
-    fn push_boolean(b: bool) {
-        todo!()
+    fn push_boolean(&mut self, b: bool) {
+        self.stack.push(LuaValue::Bool(b));
     }
 
-    fn push_integer(i: i64) {
-        todo!()
+    fn push_integer(&mut self,i: i64) {
+        self.stack.push(LuaValue::Integer(i));
     }
 
-    fn push_number(n: f64) {
-        todo!()
+    fn push_number(&mut self,n: f64) {
+        self.stack.push(LuaValue::Number(n));
     }
 
-    fn push_string(s: String) {
-        todo!()
+    fn push_string(&mut self,s: String) {
+        self.stack.push(LuaValue::String(s));
     }
 }
