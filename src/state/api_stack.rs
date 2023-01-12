@@ -52,7 +52,22 @@ impl api::lua_state::LuaState for LuaState {
     }
 
     fn rotate(&mut self, idx: i32, n: i32) {
-        todo!()
+        let start = self.abs_index(idx) - 1;
+        let top = self.stack.top - 1;
+
+        let offset = n.abs() % (top - start + 1);
+
+        let m;
+
+        if n > 0 {
+            m = offset - 1;
+        }else {
+            m = top - offset;
+        }
+
+        self.stack.reverse(start, top);
+        self.stack.reverse(start, start + m);
+        self.stack.reverse(start + m + 1, top);
     }
 
     fn set_top(&mut self, idx: i32) {
