@@ -87,7 +87,10 @@ impl api::lua_state::LuaState for LuaState {
     fn type_name(&self, tp: LuaType) -> String {
         let str = match tp {
             LuaType(LUA_TNONE) => "no value",
-            LuaType
+            LuaType(LUA_TNIL) => "nil",
+            LuaType(LUA_TBOOLEAN) => "bool",
+            LuaType(LUA_TNUMBER) => "number",
+            LuaType(LUA_TSTRING) => "string"
         }
     }
 
