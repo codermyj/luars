@@ -124,8 +124,7 @@ impl api::lua_state::LuaState for LuaState {
     }
 
     fn is_integer(&self, idx: i32) -> bool {
-
-
+        todo!()
     }
 
     fn is_number(&self, idx: i32) -> bool {
