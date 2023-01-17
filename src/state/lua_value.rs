@@ -1,6 +1,6 @@
 use crate::api::consts::*;
 
-#[derive(Clone)]
+#[derive(Copy, Clone)]
 pub enum LuaValue {
     Nil,
     Bool(bool),
@@ -10,7 +10,7 @@ pub enum LuaValue {
 }
 
 impl LuaValue {
-    fn type_of(&self) -> u8 {
+    pub fn type_of(&self) -> u8 {
         match self {
             &LuaValue::Nil => LUA_TNIL,
             &LuaValue::Bool(b) => LUA_TBOOLEAN,

@@ -1,4 +1,4 @@
-pub struct LuaType(u8);
+pub struct LuaType(pub u8);
 
 pub trait LuaState {
     /// 基础栈操作

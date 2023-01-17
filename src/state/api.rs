@@ -90,32 +90,42 @@ impl api::lua_state::LuaState for LuaState {
             LuaType(LUA_TNIL) => "nil",
             LuaType(LUA_TBOOLEAN) => "bool",
             LuaType(LUA_TNUMBER) => "number",
-            LuaType(LUA_TSTRING) => "string"
-        }
+            LuaType(LUA_TSTRING) => "string",
+            LuaType(LUA_TTABLE) => "table",
+            LuaType(LUA_TFUNCTION) => "function",
+            LuaType(LUA_TTHREAD) => "thread",
+            _ => "userdata",
+        };
+        str.to_string()
     }
 
     fn get_type(&self, idx: i32) -> LuaType {
-        todo!()
+        if self.stack.is_valid(idx) {
+            let val = self.stack.get(idx);
+            return LuaValue(val.type_of());
+        }
+        return LuaType(LUA_TNONE);
     }
 
     fn is_none(&self, idx: i32) -> bool {
-        todo!()
+        self.get_type(idx) == LuaType(LUA_TNONE)
     }
 
     fn is_nil(&self, idx: i32) -> bool {
-        todo!()
+        self.get_type(idx) == LuaType(LUA_TNIL)
     }
 
     fn is_none_or_nil(&self, idx: i32) -> bool {
-        todo!()
+        self.get_type(idx).0 <= LUA_TNIL
     }
 
     fn is_boolean(&self, idx: i32) -> bool {
-        todo!()
+        self.get_type(idx) == LuaType(LUA_TBOOLEAN)
     }
 
     fn is_integer(&self, idx: i32) -> bool {
-        todo!()
+
+
     }
 
     fn is_number(&self, idx: i32) -> bool {
@@ -123,11 +133,12 @@ impl api::lua_state::LuaState for LuaState {
     }
 
     fn is_string(&self, idx: i32) -> bool {
-        todo!()
+        let t = self.get_type(idx);
+        (t == LuaType(LUA_TSTRING)) || (t == LuaType(LUA_TNUMBER))
     }
 
     fn to_boolean(&self, idx: i32) -> bool {
-        todo!()
+        self.get_type(idx) == LuaType(LUA_TBOOLEAN)
     }
 
     fn to_integer(&self, idx: i32) -> i64 {
