@@ -1,4 +1,3 @@
-use crate::binarychunk::Constant::Nil;
 use crate::state::lua_stack::LuaStack;
 
 pub struct LuaState{
@@ -6,7 +5,7 @@ pub struct LuaState{
 }
 
 impl LuaState {
-    fn new() -> LuaState {
+    pub fn new() -> LuaState {
         LuaState {
             stack: LuaStack::new(20)
         }

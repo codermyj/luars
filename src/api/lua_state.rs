@@ -1,12 +1,14 @@
-pub struct LuaType(pub u8);
+#[derive(PartialEq)]
+pub struct LuaType(pub i8);
 
-pub trait LuaState {
+
+pub trait TraitLuaState {
     /// 基础栈操作
     fn get_top(&self) -> i32;
     fn abs_index(&self, idx: i32) -> i32;
     fn check_stack(&mut self, n: i32) -> bool;
     fn pop(&mut self, n: i32);
-    fn copy(&self, from_idx: i32, to_idx: i32);
+    fn copy(&mut self, from_idx: i32, to_idx: i32);
     fn push_value(&mut self, idx: i32);
     fn replace(&mut self, idx: i32);
     fn insert(&mut self, idx: i32);
@@ -26,10 +28,10 @@ pub trait LuaState {
     fn to_boolean(&self, idx: i32) -> bool;
     fn to_integer(&self, idx: i32) -> i64;
     fn to_integer_x(&self, idx: i32) -> (i64, bool);
-    fn to_number(&self, i32) -> f64;
-    fn to_number_x(&self, i32) -> (f64, bool);
-    fn to_string(&self, i32) -> String;
-    fn to_string_x(&self, i32) -> (String, bool);
+    fn to_number(&self, idx: i32) -> f64;
+    fn to_number_x(&self, idx: i32) -> (f64, bool);
+    fn to_string(&mut self, idx: i32) -> String;
+    fn to_string_x(&mut self, idx: i32) -> (String, bool);
     /// push函数
     fn push_nil(&mut self);
     fn push_boolean(&mut self, b: bool);
